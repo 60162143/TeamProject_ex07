@@ -24,12 +24,9 @@ public class MainActivity extends AppCompatActivity {
     AsyncHttpClient client;
     Workbook workbook;
 
-    //MainActivity mainAc = new MainActivity();
-
-    Graph g_time = new Graph(140);
-    Graph g_distance = new Graph(140);
-    Graph g_cost = new Graph(140);
-
+    public Graph g_time = new Graph(140);
+    public Graph g_distance = new Graph(140);
+    public Graph g_cost = new Graph(140);
 
     String url = "https://github.com/60162143/ExcelExam/blob/main/stations1.xls?raw=true";
 
@@ -82,8 +79,33 @@ public class MainActivity extends AppCompatActivity {
                 }
                 Log.d("tag2", "여기는 오니?");
                 g_time.print();
-                g_distance.print();
-                g_cost.print();
+                //g_distance.print();
+                //g_cost.print();
+
+                //입력을 받으면
+                int ex_start = 101;
+                int ex_end = 701;
+                //type_1은 시간 type_2는 거리 type_3은 비용
+                int type = 2;
+
+                if(type == 1){
+                    Dijkstra dij = new Dijkstra(ex_start, ex_end, g_time);
+                    dij.calculate();
+                }else if(type == 2){
+                    Dijkstra dij = new Dijkstra(ex_start, ex_end, g_distance);
+                    dij.calculate();
+                }else{
+                    Dijkstra dij = new Dijkstra(ex_start, ex_end, g_cost);
+                    dij.calculate();
+                }
+
+                /*for(Vertex v : g_distance.getVertices()){
+                    System.out.print("Vertex - " + v + " , Dist - " + v.minDistance + " , Path - ");
+                    for(Vertex pathvert : v.path){
+                        System.out.print(pathvert + " ");
+                    }
+                    System.out.println("" + v);
+                }*/
             }
         });
 
