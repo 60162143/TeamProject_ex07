@@ -5,93 +5,105 @@ import android.util.Log;
 import java.util.ArrayList;
 
 public class Graph {
+    //정점의 이름을 저장하기 위해 만든 arraylist
+    //예를 들어 v0 v1 등 정점을 그래프 느낌으로 만들기 위해 이름 만듦
+    //딱히 신경 안써도 됨
     private ArrayList<Vertex> vertices;
+    //아래 arraylist가 정점들을 저장하기 위해 만듦
     public ArrayList<Vertex> Vertexs;
+    //정점들의 이름이 101, 102같이 정수이므로 integer형으로 저장
+    //위에 Vertexs와 index는 한묶음으로 저장되기 때문에
+    //다른곳에서 찾기 편하게 하도록 만듦
     public ArrayList<Integer> index = null;
+    //정점이 저장될때마다 늘어나는 값
     private int count = 0;
-    int src_index = 0;
-    int dest_index = 0;
+    //정점의 개수가 111개이기 때문에 임의로 만듦
     public final int MAX_INDEX = 111;
+    //초기화 신경 딱히 안써도 되는 부분
     public Graph(int numberVertices){
         vertices = new ArrayList<Vertex>(numberVertices);
         Vertexs = new ArrayList<Vertex>(MAX_INDEX);
         index = new ArrayList<Integer>();
+        //이름 저장
         for(int i=0;i<numberVertices;i++){
             vertices.add(new Vertex("v"+Integer.toString(i)));
         }
     }
 
+    //정점과 이웃한 정점과 가중치 저장하는 함수
     public void addEdge(String src, String dest, String weight){
-        boolean tf = false;
-        if(index != null){
-            for(int i = 0;i < index.size();i++){
-                if(index.get(i) == Integer.parseInt(dest)){
-                    /*for(int j = 0; j<index.size(); j++){
+        //시작정점의 값이 인덱스에 저장되어 있지 않으면 false
+        boolean tf_src = false;
+        //도착정점의 값이 인덱스에 저장되어 있지 않으면 false
+        boolean tf_dest = false;
+        //정점의 이름이 정수형이므로
+        int src_index = 0;
+        int dest_index = 0;
+        //시작점과 도착점이 저장되어 있는지 확인
 
-                    }*/
-                    Log.d("tag", "111111111111111111111111111111111111111111111111111111111111111111");
-                    Edge new_edge = new Edge(vertices.get(dest_index),Integer.parseInt(weight));
-                    Vertexs.get(i).neighbours.add(new_edge);
-                    //Log.d("tag", "---------------------------------" + new_edge.target.toString() + "   " + new_edge.weight);
-                    tf = true;
-                    break;
-                }
-            }
-            if(!tf){
-                Log.d("tag", "5555555555555555555555555555555555555555555555555555555555555");
-                index.add(Integer.parseInt(dest));
-                //Log.d("tag", "index 크기는 " + index.size());
-                dest_index = count++;
-                Vertex s = vertices.get(dest_index);
-                Edge new_edge = new Edge(vertices.get(dest_index),Integer.parseInt(weight));
-                s.neighbours.add(new_edge);
-                Vertexs.add(s);
-            }else {
-                tf = false;
-            }
-        }else{
-            Log.d("tag", "444444444444444444444444444444444444444444444444444");
-            index.add(Integer.parseInt(dest));
-            dest_index = count++;
-            Vertex s = vertices.get(dest_index);
-            //Log.d("tag", "---------------------------------" + s.toString());
-            Edge new_edge = new Edge(vertices.get(dest_index),Integer.parseInt(weight));
-            s.neighbours.add(new_edge);
-            Vertexs.add(s);
-        }
-
-        for(int j=0; j < index.size();j++){
-            if(index.get(j) == Integer.parseInt(src)) {
-                Log.d("tag", "77777777777777777777777777777777777777777777777777777777777");
-                Edge new_edge = new Edge(vertices.get(dest_index),Integer.parseInt(weight));
-                Vertexs.get(j).neighbours.add(new_edge);
-                tf = true;
-                src_index = j;
+        //시작정점이 저장되어 있으면
+        for(int i = 0; i < index.size(); i++){
+            if(index.get(i) == Integer.parseInt(src)){
+                tf_src = true;
+                src_index = i;
                 break;
             }
         }
 
-        if(!tf){
-            Log.d("tag", "8888888888888888888888888888888888888888888888888");
+        //도착정점이 저장되어 있으면
+        for(int i = 0; i < index.size(); i++){
+            if(index.get(i) == Integer.parseInt(dest)){
+                tf_dest = true;
+                dest_index = i;
+                break;
+            }
+        }
+
+        //시작점과 도착점이 저장되어 있을때
+        if(tf_src && tf_dest){
+            //시작점에서 도착점까지의 edge를 시작정점의 neighbours에 저장
+            //아래도 똑같음
+            Edge new_edge1 = new Edge(vertices.get(dest_index),Integer.parseInt(weight));
+            Vertexs.get(src_index).neighbours.add(new_edge1);
+            //도착점에서 시작점까지의 edge를 도착정점의 neighbours에 저장
+            //아래도 똑같음
+            Edge new_edge2 = new Edge(vertices.get(src_index),Integer.parseInt(weight));
+            Vertexs.get(dest_index).neighbours.add(new_edge2);
+        }
+        //도착점만 저장되어 있을때
+        else if(!tf_src && tf_dest){
             index.add(Integer.parseInt(src));
-            src_index = count++;
-            Vertex s = vertices.get(src_index);
-            Edge new_edge = new Edge(vertices.get(dest_index),Integer.parseInt(weight));
-            s.neighbours.add(new_edge);
-            Vertexs.add(s);
+            src_index = count;
+            Vertexs.add(vertices.get(count++));
+            Edge new_edge1 = new Edge(vertices.get(dest_index),Integer.parseInt(weight));
+            Vertexs.get(src_index).neighbours.add(new_edge1);
+            Edge new_edge2 = new Edge(vertices.get(src_index),Integer.parseInt(weight));
+            Vertexs.get(dest_index).neighbours.add(new_edge2);
+        }
+        //시작점만 저장되어 있을때
+        else if(tf_src && !tf_dest){
+            index.add(Integer.parseInt(dest));
+            dest_index = count;
+            Vertexs.add(vertices.get(count++));
+            Edge new_edge1 = new Edge(vertices.get(dest_index),Integer.parseInt(weight));
+            Vertexs.get(src_index).neighbours.add(new_edge1);
+            Edge new_edge2 = new Edge(vertices.get(src_index),Integer.parseInt(weight));
+            Vertexs.get(dest_index).neighbours.add(new_edge2);
+        }
+        //시작점과 도착점이 저장되어 있지 않을 때
+        else{
+            index.add(Integer.parseInt(src));
+            src_index = count;
+            Vertexs.add(vertices.get(count++));
+            index.add(Integer.parseInt(dest));
+            dest_index = count;
+            Vertexs.add(vertices.get(count++));
+            Edge new_edge1 = new Edge(vertices.get(dest_index),Integer.parseInt(weight));
+            Vertexs.get(src_index).neighbours.add(new_edge1);
+            Edge new_edge2 = new Edge(vertices.get(src_index),Integer.parseInt(weight));
+            Vertexs.get(dest_index).neighbours.add(new_edge2);
         }
 
-        /*Vertex s = vertices.get(src_index);
-        Edge new_edge = new Edge(vertices.get(dest_index),Double.parseDouble(weight));
-        s.neighbours.add(new_edge);*/
-    }
-
-    public void print(){
-        Log.d("tag2", "-------------------------------------------------------------------------");
-        for(int i = 0; i<Vertexs.size(); i++){
-            Log.d("tag3", Vertexs.get(i).toString() + " " + Integer.toString(index.get(i)));
-            //Log.d("tag3", Vertexs.get(i).toString());
-        }
     }
 
     public ArrayList<Vertex> getVertices() {
@@ -99,6 +111,6 @@ public class Graph {
     }
 
     public Vertex getVertex(int vert){
-        return vertices.get(vert);
+        return Vertexs.get(vert);
     }
 }
